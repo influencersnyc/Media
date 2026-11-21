@@ -88,7 +88,11 @@ export async function handleSubmission(request: Request, kind: string) {
   const source = process.env.VERCEL ? request.headers.get('x-real-ip') : null
   const clientKey = hash(source ?? 'local:' + payload.email)
   const base = SUPABASE_URL.replace(/\/$/, '') + '/rest/v1'
-  const headers = { apikey: SUPABASE_SERVICE_ROLE_KEY, 'Content-Type': 'application/json' }
+  const headers = new Headers({ apikey: SUPABASE_SERVICE_ROLE_KEY, 'Content-Type': 'application/json' })
+  // Legacy service-role keys are JWTs. New secret keys are handled by the API gateway.
+  if (!SUPABASE_SERVICE_ROLE_KEY.startsWith('sb_secret_')) {
+    headers.set('Authorization', 'Bearer ' + SUPABASE_SERVICE_ROLE_KEY)
+  }
   try {
     const stored = await fetch(base + '/rpc/receive_submission', {
       method: 'POST', headers,
