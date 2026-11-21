@@ -80,6 +80,11 @@ export async function handleSubmission(request: Request, kind: string) {
   const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, FORM_HASH_SECRET, RESEND_API_KEY, MAIL_FROM, MAIL_INBOX } = process.env
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !FORM_HASH_SECRET ||
       (kind !== 'newsletter' && (!RESEND_API_KEY || !MAIL_FROM || !MAIL_INBOX))) {
+    const required = { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, FORM_HASH_SECRET,
+      ...(kind !== 'newsletter' ? { RESEND_API_KEY, MAIL_FROM, MAIL_INBOX } : {}) }
+    console.error('Form configuration is incomplete', {
+      kind, missing: Object.keys(required).filter(name => !required[name as keyof typeof required]),
+    })
     return json('This form is temporarily unavailable. Please try again later.', 503)
   }
 
