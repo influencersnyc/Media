@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { articles } from '../../../content/network'
+import { articles, site } from '../../../content/network'
 import { PageIntro } from '../../../components/ui'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -27,7 +27,18 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 export default async function Page(props: Props) {
   const a = await getArticle(props)
   const related = articles.filter(item => a.related.includes(item.slug))
-  return <article><PageIntro title={a.title} description={a.excerpt}><p>{a.category} · {a.author} · <time dateTime={a.publishedAt}>{a.publishedAt}</time>
+  const structuredData = {
+    '@context': 'https://schema.org', '@type': 'Article',
+    headline: a.title, description: a.excerpt,
+    author: { '@type': 'Person', name: a.author },
+    publisher: { '@type': 'Organization', name: 'Influencers.NYC', url: site },
+    datePublished: a.publishedAt, dateModified: a.updatedAt ?? a.publishedAt,
+    mainEntityOfPage: site + '/the-edit/' + a.slug,
+    ...(a.image ? { image: site + a.image.src } : {}),
+  }
+  return <article>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+    <PageIntro title={a.title} description={a.excerpt}><p>{a.category} · {a.author} · <time dateTime={a.publishedAt}>{a.publishedAt}</time>
     {a.updatedAt && <> · Updated <time dateTime={a.updatedAt}>{a.updatedAt}</time></>}</p></PageIntro>
     <div className="wrap page-content"><div className="prose">
       {a.disclosure && <p><strong>{a.disclosure}</strong></p>}

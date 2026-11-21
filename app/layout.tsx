@@ -10,8 +10,12 @@ export const metadata: Metadata = {
   title: { default: 'Influencers.NYC | Independent Media. Connected Influence.', template: '%s | Influencers.NYC' },
   description,
   openGraph: { siteName: 'Influencers.NYC', type: 'website', description },
+  twitter: { card: 'summary_large_image' },
   robots: process.env.VERCEL_ENV === 'preview' ? { index: false, follow: false } : undefined,
 }
+
+// Applies the saved or preferred theme before first paint to avoid a flash.
+const themeScript = "try{var t=localStorage.getItem('theme');document.documentElement.dataset.theme=t==='light'||t==='dark'?t:matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){}"
 
 const navigation = [
   ['/', 'Home'], ['/publications', 'Our Publications'], ['/the-edit', 'The Edit'],
@@ -26,7 +30,9 @@ function Navigation() {
 }
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" suppressHydrationWarning><body>
+  return <html lang="en" suppressHydrationWarning><head>
+    <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+  </head><body>
     <a className="skip" href="#main">Skip to content</a>
     <header className="masthead"><div className="wrap bar">
       <Link className="wordmark" href="/">Influencers<span>.NYC</span></Link>
