@@ -22,4 +22,4 @@ Inquiries and messages are stored server-side with pending-review status. Retrie
 
 Verify a controlled test inquiry in Preview with an authorized recipient. Check the stored row, internal email and advertiser acknowledgment, then repeat to verify deduplication. Check contact and newsletter separately. The policy pages are initial drafts for review before production. Production deployment requires separate approval.
 
-Live billing, ad delivery, user accounts, and campaign operations are later-phase work.
+Live billing, ad delivery, user accounts, and campaign operations are later-phase work; the Phase 2 scope and milestones are planned in [docs/phase-2-plan.md](docs/phase-2-plan.md).
